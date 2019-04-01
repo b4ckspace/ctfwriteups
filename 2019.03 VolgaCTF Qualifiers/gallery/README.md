@@ -37,16 +37,16 @@ directories. The `image` endpoint turns out to be useless for an attack, we
 will elaborate on that later.
 
 So using the `images` endpoint like `/api/images?year=2018` will result in
-the directory `/var/www/apps/volga\_gallery/storage/app/{year}/img/` to be
+the directory `/var/www/apps/volga_gallery/storage/app/{year}/img/` to be
 listed. We can chop off the `/img/` part by using a null byte, i.e., visiting
-`/api/images?year=../%00` will result in `/var/www/apps/volga\_gallery/storage`
+`/api/images?year=../%00` will result in `/var/www/apps/volga_gallery/storage`
 to be listed. Using `year=../../../../%00` we will find a file named `flag`.
 
 At first sight, we might use the `image` endpoint to retrieve this file, by
 requesting `/api/image?year=../../../../%00&img=flag`. So, this endpoint will
-constructs the `path in the following way:
+constructs the path in the following way:
 `/var/www/apps/volga\_gallery/storage/app/{year}/img/{img}`
-However, this path is passed to the PHP function `file\_exists`, which bails
+However, this path is passed to the PHP function `file_exists`, which bails
 if you pass it a null byte (“file_exists() expects parameter 1 to be a valid
 path, string given”). This exception is rendered nicely by a Laravel exception
 page, so you see more information (like the full path mentioned before).
@@ -58,7 +58,7 @@ would remove the `/img/` part added) does not work. Also other path traversal
 tricks (double encoding, UTF-16 encoding, truncation ...) do not work.
 
 Looking again, we find another file of interest when requesting
-`/api/images?year=../../../volga\_adminpanel/sessions%00`:
+`/api/images?year=../../../volga_adminpanel/sessions%00`:
 `euzb7bMKx-5F29b2xNobGTDoWXmVFlEM.json` which probably contains a valid
 session we could steal. Again, there is no way to read this file directly.
 
@@ -69,7 +69,7 @@ Looking for the cookie name the Express framework (NodeJS) resulted in
 Reading the source code of `express-session` (the session framework of
 Express) shows that they actually sign the cookies with a secret key. A few
 more directory traversal requests we stumbled upon the configuration file
-named config.js via `/api/images?year=../../../volga\_auth/js%00`. We can
+named config.js via `/api/images?year=../../../volga_auth/js%00`. We can
 download this file directly via HTTP at `/js/config.js`. Furthermore, there
 are two additional files of interest: `/js/index.js` and `js/auth.js`.
 
@@ -110,7 +110,7 @@ file the following way and run the server to receive the cookie:
       saveUninitialized: true,
     // ...
 
-So we got the cookie value (`s%3ACLPlzjlR\_Lpfk1S0xWpl5w333HuVYLM9.qygCVWau45L5jPSQyfO%2BfPLC22loSdoYs9knaOxf%2BKc`),
+So we got the cookie value (`s%3ACLPlzjlR_Lpfk1S0xWpl5w333HuVYLM9.qygCVWau45L5jPSQyfO%2BfPLC22loSdoYs9knaOxf%2BKc`),
 applied it to our browser and visit `/api/flag` (you can find that endpoint in
 the `js/index.js` from before) and receive our flag. Did not work. WTF?
 Checking everything again. Still does not work. Joy turns into frustration.
