@@ -74,6 +74,7 @@ download this file directly via HTTP at `/js/config.js`. Furthermore, there
 are two additional files of interest: `/js/index.js` and `js/auth.js`.
 
 The configuration file looks like:
+
     const config = {
       apiPrefix: '/api',
       server: {
@@ -122,6 +123,7 @@ traversal vulnerability under the assumption that you can sign the session
 cookie.
 
 Editing `js/config.js` again:
+
     session: {
       genid: function() {
         return "../../../../../../../../../../../../../../var/www/apps/volga_adminpanel/sessions/euzb7bMKx-5F29b2xNobGTDoWXmVFlEM"
