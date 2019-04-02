@@ -12,6 +12,8 @@ Task description
 Solution
 --------
 
+![Audacity screenshot](audacity.png)
+
 Given was an audio file (recorded.mp3) which contains information encoded in
 the high frequencies (about 12 KHz to 20 KHz) of the frequency spectrum. To
 see these information, open the file in audacity and change to the frequency
