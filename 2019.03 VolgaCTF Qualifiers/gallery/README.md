@@ -133,7 +133,7 @@ Editing `js/config.js` again:
     // ...
 
 Again, run the server, get the cookie, pass it on to `/api/flag`. Works. We
-received the flag: `VolgaCTF{31c2ac53d4101a01264775328797d424}`. Thanks for
-the organizers to let the service running for some time after the competition!
-Finally seeing the flag made us happy again :-)
+received the flag: `VolgaCTF{31c2ac53d4101a01264775328797d424}`. Thanks to
+the organizers for keeping the service running for some time after the
+competition! Finally seeing the flag made us happy again :-)
 
