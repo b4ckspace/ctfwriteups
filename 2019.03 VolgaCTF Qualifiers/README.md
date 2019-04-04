@@ -7,10 +7,10 @@ Official Website: https://volgactf.ru/en/volgactf-2019-qualifier/qualifier.html
 ### Solved by us
 - [Horrible retelling](/2019.03%20VolgaCTF%20Qualifiers/horribleretelling) (50) [TBD]
 - [warm](/2019.03%20VolgaCTF%20Qualifiers/warm) (100) [TBD]
-- [Blind](/2019.03%20VolgaCTF%20Qualifiers/blind) (200) [TBD]
+- [Blind](/2019.03%20VolgaCTF%20Qualifiers/blind) (200)
 - [Shadow Cat](/2019.03%20VolgaCTF%20Qualifiers/warm) (100) [TBD]
-- [Shop](/2019.03%20VolgaCTF%20Qualifiers/shop) (100) [TBD]
-- [Shop V.2](/2019.03%20VolgaCTF%20Qualifiers/shopv2) (100) [TBD]
+- [Shop](/2019.03%20VolgaCTF%20Qualifiers/shop) (100)
+- [Shop V.2](/2019.03%20VolgaCTF%20Qualifiers/shopv2) (100)
 - [JOI](/2019.03%20VolgaCTF%20Qualifiers/joi) (150) [TBD]
 - [Higher](/2019.03%20VolgaCTF%20Qualifiers/higher) (100)
 - [Fakegram Star](/2019.03%20VolgaCTF%20Qualifiers/fakegramstar) (75) [TBD]
