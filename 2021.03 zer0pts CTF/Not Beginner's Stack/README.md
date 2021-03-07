@@ -33,11 +33,11 @@ We are given the assembly code `main.S` of the challenge binary, so there is not
     PIE:      No PIE (0x400000)
     RWX:      Has RWX segments
 ```
-This should be easy.^1^
+This should be easy.[1]
 
-The output of `checksec` is especially important for this challenge as it correctly reports the stack to be executable *in theory*, which it is not on my local machine or, apparently, on modern kernels in general.^2^ This means that we cannot get the shellcode part of my exploit to work locally, but at least it works on the remote.
+The output of `checksec` is especially important for this challenge as it correctly reports the stack to be executable *in theory*, which it is not on my local machine or, apparently, on modern kernels in general.[2] This means that we cannot get the shellcode part of my exploit to work locally, but at least it works on the remote.
 
-> It works on their machine. --- Then we'll ship their machine.
+> It works on their machine. — Then we'll ship their machine.
 
 With the return addresses on a shadow stack, we need to find a way to write there. Since `rbp` is still saved to the "regular" stack, we can overwrite it with a pointer into the data segment (the address of which is known because of `No PIE`) using the vulnerable `read` in `vuln` (reading up to 4096 bytes into a 256-byte stack buffer). Then, the `leave` instruction at the end of `vuln` sets `rsp` to the current base pointer and pops `rbp` off the stack, thus setting it to our desired value. The subsequent `read` in `notvuln` now writes a shiny new shadow stack to `[rbp-0x100]`.
 
@@ -45,7 +45,7 @@ With the return addresses on a shadow stack, we need to find a way to write ther
 
 My exploit requires the current `stable` version of `pwntools` (`4.3.1` at the time of writing).
 
-```python=
+```python
 #!/usr/bin/env python3
 
 from pwn import *
@@ -55,7 +55,7 @@ BINARY = 'not_beginners_stack/chall'
 
 I implemented my own little helper class for building the shadow stack, similar to `pwntools`' `ROP`.
 
-```python=
+```python
 class ShadowStack:
     def __init__(self, binary):
         self.binary = binary
@@ -91,14 +91,14 @@ class ShadowStack:
 ```
 
 The first part of the exploit builds a new shadow stack used to overwrite the current one as described above:
-1. `notvuln()` --- `enter`s twice, but `leave`s only once; the second `enter` pushes an address to the regular stack onto it
-2. `vuln()` --- `enter`s the second stack frame from the previous call again, `rdi`, `rsi` and `rdx` will be set to `0`, `[rbp-0x100]` and `0x1000`, respectively
-3. `0x400115()`^3^ --- set `rdi` to `1`, then call `write`, then `read`; this leaks 4096 bytes of stack memory and reads some shellcode onto the stack; the aforementioned stack address is at offset `0x100` in the leak
-5. `..@9.return_address()` --- `leave` to set `rbp` to `[__stack_shadow+0x100]`
-6. `..@5.return_address()` --- read another shadow stack
-7. `exit()` --- not used in the final exploit, cleanly exit when testing e.g. the leak
+1. `notvuln()` — `enter`s twice, but `leave`s only once; the second `enter` pushes an address to the regular stack onto it
+2. `vuln()` — `enter`s the second stack frame from the previous call again, `rdi`, `rsi` and `rdx` will be set to `0`, `[rbp-0x100]` and `0x1000`, respectively
+3. `0x400115()`[3] — set `rdi` to `1`, then call `write`, then `read`; this leaks 4096 bytes of stack memory and reads some shellcode onto the stack; the aforementioned stack address is at offset `0x100` in the leak
+5. `..@9.return_address()` — `leave` to set `rbp` to `[__stack_shadow+0x100]`
+6. `..@5.return_address()` — read another shadow stack
+7. `exit()` — not used in the final exploit, cleanly exit when testing e.g. the leak
 
-```python=
+```python
 context(binary=BINARY)
 elf = context.binary
 
@@ -115,7 +115,7 @@ print(shadow.dump())
 
 Send/receive data as described above or required for `read` to continue:
 
-```python=
+```python
 shellcode = asm(shellcraft.sh())
 
 #conn = process(BINARY)
@@ -146,7 +146,7 @@ conn.send(flat(shellcode, length=0x100))
 
 The second part of the exploit consists of extracting the leaked stack address and building another shadow stack to jump to the shellcode at `stack_addr-0x100`:
 
-```python=
+```python
 stack_addr = int.from_bytes(leak[0x100:0x108], context.endian)
 print('Leaked address:', hex(stack_addr))
 
@@ -173,4 +173,4 @@ Sometimes the script will hang when reading the leak. `Ctrl-C` and running it ag
 
 1. It still took me way too long to get to a working exploit or even the leak.
 2. It could have been even easier: As it turns out, not only is the stack executable, but the data segment as well.
-3. I originally intended to use `0x40018a` here since it would ensure that the following `leave` (which would also be included, rendering `..@9.return_address` unnecessary) loads `[__stack_shadow+0x100]` into `rbp` by writing that address to the stack again. However, the value is already there and I did not want to print another prompt or otherwise separate the final two unconditional `send`s, so I chose to use `0x400115` and write as much bytes as would be consumed. Writing as much bytes as `read` would consume at `0x40018a` did not work --- overflowing the buffer with 4096 bytes lead to a segmentation fault.
+3. I originally intended to use `0x40018a` here since it would ensure that the following `leave` (which would also be included, rendering `..@9.return_address` unnecessary) loads `[__stack_shadow+0x100]` into `rbp` by writing that address to the stack again. However, the value is already there and I did not want to print another prompt or otherwise separate the final two unconditional `send`s, so I chose to use `0x400115` and write as much bytes as would be consumed. Writing as much bytes as `read` would consume at `0x40018a` did not work — overflowing the buffer with 4096 bytes lead to a segmentation fault.
