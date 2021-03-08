@@ -4,7 +4,7 @@
 
 ### Description
 
-Elementary pwners love to overwrite the return address. This time you can't!
+Elementary pwners love to overwrite the return address. This time you can't! \
 `nc pwn.ctf.zer0pts.com 9011`
 
 ### Files
